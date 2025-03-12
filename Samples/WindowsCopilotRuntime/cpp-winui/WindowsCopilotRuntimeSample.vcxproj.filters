@@ -8,13 +8,31 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
+    <Midl Include="Converters\Converters.idl">
+      <Filter>Converters</Filter>
+    </Midl>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="Converters\Converters.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Converters\BoolToVisibilityConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="Converters\ContentFilterOptionsSeverityLevelConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="Converters\EmbeddingVectorConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="Converters\NullToVisibilityConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -42,6 +60,9 @@
   <ItemGroup>
     <Filter Include="Assets">
       <UniqueIdentifier>{5e654a77-3cdc-48c0-922f-385330d87188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converters">
+      <UniqueIdentifier>{8965f3b9-7d84-4d22-8559-552e31d3d8f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

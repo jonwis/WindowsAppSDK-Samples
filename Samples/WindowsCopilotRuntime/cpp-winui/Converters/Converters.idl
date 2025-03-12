@@ -1,0 +1,24 @@
+﻿namespace WindowsCopilotRuntimeSample.Converters
+{
+    runtimeclass BoolToVisibilityConverter : [default]Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        BoolToVisibilityConverter();
+
+        Boolean Reverse;
+    }
+
+    runtimeclass EmbeddingVectorConverter : [default]Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        EmbeddingVectorConverter();
+    }
+
+    runtimeclass NullToVisibilityConverter : [default] Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        NullToVisibilityConverter();
+    }
+
+    runtimeclass ContentFilterOptionsSeverityLevelConverter : [default] Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        ContentFilterOptionsSeverityLevelConverter();
+    }
+}
