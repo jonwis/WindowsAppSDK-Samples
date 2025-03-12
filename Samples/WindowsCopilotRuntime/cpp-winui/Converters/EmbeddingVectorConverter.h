@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#include "Converters.EmbeddingVectorConverter.g.h"
+#include "Converters/EmbeddingVectorConverter.g.h"
 #include <winrt/Microsoft.Windows.SemanticSearch.h>
 
 namespace winrt::WindowsCopilotRuntimeSample::Converters::implementation

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#include "Converters.NullToVisibilityConverter.g.h"
+#include "Converters/NullToVisibilityConverter.g.h"
 
 namespace winrt::WindowsCopilotRuntimeSample::Converters::implementation
 {

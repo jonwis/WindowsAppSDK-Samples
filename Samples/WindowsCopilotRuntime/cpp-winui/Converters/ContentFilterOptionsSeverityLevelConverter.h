@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-#include "Converters.ContentFilterOptionsSeverityLevelConverter.g.h"
+#include "Converters/ContentFilterOptionsSeverityLevelConverter.g.h"
 #include <winrt/Microsoft.Windows.AI.ContentModeration.h>
 
 namespace winrt::WindowsCopilotRuntimeSample::Converters::implementation

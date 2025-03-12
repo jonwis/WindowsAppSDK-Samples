@@ -5,11 +5,20 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml" />
+    <Page Include="Controls\CodeBlockControl.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="Controls\ModelInitializationControl.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
     <Midl Include="Converters\Converters.idl">
       <Filter>Converters</Filter>
+    </Midl>
+    <Midl Include="Controls\Controls.idl">
+      <Filter>Controls</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +72,9 @@
     </Filter>
     <Filter Include="Converters">
       <UniqueIdentifier>{8965f3b9-7d84-4d22-8559-552e31d3d8f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{8ca6fa3c-efcb-4475-a4b9-4d6128d5417d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

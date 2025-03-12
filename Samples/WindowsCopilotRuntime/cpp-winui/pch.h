@@ -22,9 +22,12 @@
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
+#include <winrt/Windows.UI.Xaml.Interop.h>
 #include <wil/cppwinrt_helpers.h>
 
 #include <Converters/BoolToVisibilityConverter.h>
 #include <Converters/EmbeddingVectorConverter.h>
 #include <Converters/NullToVisibilityConverter.h>
 #include <Converters/ContentFilterOptionsSeverityLevelConverter.h>
+#include <Controls/CodeBlockControl.xaml.h>
+#include <Controls/ModelInitializationControl.xaml.h>

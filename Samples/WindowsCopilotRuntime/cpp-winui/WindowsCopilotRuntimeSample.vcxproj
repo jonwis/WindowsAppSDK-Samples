@@ -10,6 +10,7 @@
     <ProjectGuid>{5e654a77-3cdc-48c0-922f-385330d87188}</ProjectGuid>
     <ProjectName>WindowsCopilotRuntimeSample</ProjectName>
     <RootNamespace>WindowsCopilotRuntimeSample</RootNamespace>
+    <CppWinRTUsePrefixes>false</CppWinRTUsePrefixes>
     <!--
       $(TargetName) should be same as $(RootNamespace) so that the produced binaries (.exe/.pri/etc.)
       have a name that matches the .winmd
@@ -87,11 +88,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Controls;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -107,6 +114,12 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Controls\CodeBlockControl.xaml.h">
+      <DependentUpon>Controls\CodeBlockControl.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="Controls\ModelInitializationControl.xaml.h">
+      <DependentUpon>Controls\ModelInitializationControl.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="Converters\BoolToVisibilityConverter.h" />
     <ClInclude Include="Converters\ContentFilterOptionsSeverityLevelConverter.h" />
     <ClInclude Include="Converters\EmbeddingVectorConverter.h" />
@@ -121,6 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="Controls\CodeBlockControl.xaml" />
+    <Page Include="Controls\ModelInitializationControl.xaml" />
     <Page Include="MainWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +152,7 @@
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Midl Include="Controls\Controls.idl" />
     <Midl Include="Converters\Converters.idl" />
     <Midl Include="MainWindow.idl">
       <SubType>Code</SubType>

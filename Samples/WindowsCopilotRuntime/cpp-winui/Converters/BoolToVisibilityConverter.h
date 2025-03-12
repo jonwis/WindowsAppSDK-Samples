@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 #include <winrt/base.h>
-#include "Converters.BoolToVisibilityConverter.g.h"
+#include "Converters/BoolToVisibilityConverter.g.h"
 
 namespace winrt::WindowsCopilotRuntimeSample::Converters::implementation
 {
