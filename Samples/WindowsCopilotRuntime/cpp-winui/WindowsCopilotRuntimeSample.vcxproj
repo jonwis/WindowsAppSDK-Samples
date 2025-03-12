@@ -143,6 +143,9 @@
     <ClCompile Include="Controls\CodeBlockControl.xaml.cpp">
       <DependentUpon>Controls\CodeBlockControl.xaml</DependentUpon>
     </ClCompile>
+    <ClCompile Include="Controls\ModelInitializationControl.xaml.cpp">
+      <DependentUpon>Controls\ModelInitializationControl.xaml</DependentUpon>
+    </ClCompile>
     <ClCompile Include="Converters\Converters.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
