@@ -1,9 +1,6 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
-
-using namespace winrt;
-using namespace Microsoft::UI::Xaml;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -20,7 +17,7 @@ namespace winrt::WindowsCopilotRuntimeSample::implementation
         // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
 
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
-        UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs const& e)
+        UnhandledException([](IInspectable const&, Microsoft::UI::Xaml::UnhandledExceptionEventArgs const& e)
         {
             if (IsDebuggerPresent())
             {
@@ -35,7 +32,7 @@ namespace winrt::WindowsCopilotRuntimeSample::implementation
     /// Invoked when the application is launched.
     /// </summary>
     /// <param name="e">Details about the launch request and process.</param>
-    void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
+    void App::OnLaunched([[maybe_unused]] Microsoft::UI::Xaml::LaunchActivatedEventArgs const& e)
     {
         window = make<MainWindow>();
         window.Activate();

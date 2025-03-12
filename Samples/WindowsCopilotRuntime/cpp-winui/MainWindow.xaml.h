@@ -13,7 +13,8 @@ namespace winrt::WindowsCopilotRuntimeSample::implementation
         }
 
         void InitializeComponent();
-        void NavView_SelectionChanged(Microsoft::UI::Xaml::Controls::NavigationView const&, Microsoft::UI::Xaml::Controls::NavigationViewSelectionChangedEventArgs const& args)
+        void NavView_SelectionChanged(Microsoft::UI::Xaml::Controls::NavigationView const&, Microsoft::UI::Xaml::Controls::NavigationViewSelectionChangedEventArgs const& args);
+#if 0
         {
             if (auto container = args.SelectedItemContainer())
             {
@@ -40,6 +41,7 @@ namespace winrt::WindowsCopilotRuntimeSample::implementation
                 }
             }
         }
+#endif
     };
 }
 

@@ -42,6 +42,9 @@
     <ClInclude Include="Converters\NullToVisibilityConverter.h">
       <Filter>Converters</Filter>
     </ClInclude>
+    <ClInclude Include="Util\StorageFileExtensions.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -76,6 +79,9 @@
     <Filter Include="Controls">
       <UniqueIdentifier>{8ca6fa3c-efcb-4475-a4b9-4d6128d5417d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{32b9cda7-99e5-4da2-8afb-ecceb8eb3063}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
@@ -88,8 +94,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

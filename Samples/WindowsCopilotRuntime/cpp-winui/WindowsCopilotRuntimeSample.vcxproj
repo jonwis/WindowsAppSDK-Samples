@@ -131,6 +131,7 @@
     <ClInclude Include="MainWindow.xaml.h">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="Util\StorageFileExtensions.h" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -139,6 +140,9 @@
     <Page Include="MainWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Controls\CodeBlockControl.xaml.cpp">
+      <DependentUpon>Controls\CodeBlockControl.xaml</DependentUpon>
+    </ClCompile>
     <ClCompile Include="Converters\Converters.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
