@@ -25,10 +25,20 @@ The preparation scripts will acquire and use a copy of `nuget.exe` from the offi
 Clone this repo to your local machine, then start a command shell with both `cl.exe`
 and `python3` in your path (and optionally `nuget.exe`).
 
-[Install the Windows App SDK and Windows SDK](install_windows_sdk.py) packages through
-your command shell:
+[Install the Windows App SDK and Windows SDK](./install_windows_sdk.py) packages through
+your command shell. The default location is `out/sdks/` under this directory, but
+you can change that as needed.
 
 ```ps1
-PS> python3 install_sdks.py
+PS> python3 install_windows_sdk.py
 ```
 
+## Building
+
+In your command shell, build the code 
+
+## How it works
+
+Both the Windows SDK and Windows App SDK are available as NuGet packages from Microsoft.
+Running [install_sdks.py](./install_sdks.py) constructs a packages.config file containing
+the desired versions of each and restores them to a local directory.

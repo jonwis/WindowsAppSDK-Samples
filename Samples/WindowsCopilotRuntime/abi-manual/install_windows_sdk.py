@@ -11,6 +11,9 @@ NUGET_URL = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 WINSDK_VERSION = "10.0.26100.3323"
 WINSDK_TOOLS_VERSION = "10.0.26100.1742"
 WASDK_VERSION = "1.7.250310001"
+ABIWINRT_VERSION = "2.0.210330.2"
+WEBVIEW2_VERSION = "1.0.3124.44"
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "out/sdk")
 
 def get_nuget_path():
     # See if there's an environment variable set for nuget.exe
@@ -43,6 +46,17 @@ def move_with_retry(src, dst, retries=3):
             else:
                 raise RuntimeError(f"Failed to move {src} to {dst} after {retries} attempts.") from e
 
+def default_target_architecture():
+    # Get the default target architecture from the environment variable. Remap from AMD64 to x64
+    target_arch = os.environ.get("TARGET_ARCHITECTURE")
+    if target_arch == "AMD64":
+        target_arch = "x64"
+    elif target_arch == "x86":
+        target_arch = "x86"
+    elif target_arch == "ARM64":
+        target_arch = "arm64"
+    return target_arch
+
 def main():
     parser = argparse.ArgumentParser(description="Restore NuGet packages.")
     parser.add_argument("--nuget-path", help="Path to nuget.exe")
@@ -50,9 +64,11 @@ def main():
     parser.add_argument("--sdk-version", default=WINSDK_VERSION, help="Version of the Windows SDK to install")
     parser.add_argument("--wasdk-version", default=WASDK_VERSION, help="Version of the Windows App SDK to install")
     parser.add_argument("--tools-version", default=WINSDK_TOOLS_VERSION, help="Version of the Windows SDK Build tools to install")
-    parser.add_argument("--output-dir", required=True, help="Directory to restore packages to")
+    parser.add_argument("--abiwinrt-version", default=ABIWINRT_VERSION, help="Version of the Windows ABI WinRT to install")
+    parser.add_argument("--webview2-version", default=WEBVIEW2_VERSION, help="Version of the WebView2 SDK to install")
+    parser.add_argument("--output-dir", default=OUTPUT_DIR, help="Directory to restore packages to")
     parser.add_argument("--like-sdk", action="store_true", help="Use the layout of the Windows SDK")
-    parser.add_argument("architecture", nargs="+", help="One or more architectures of the Windows SDK (x86, arm64, or x64)")
+    parser.add_argument("architecture", nargs="*", default=default_target_architecture(), help="One or more architectures of the Windows SDK (x86, arm64, or x64)")
     args = parser.parse_intermixed_args()
 
     # We only support x86, x64, and arm64 architectures; check all the architectures
@@ -89,6 +105,8 @@ def main():
         f.write(f"""    <package id="Microsoft.Windows.SDK.CPP" version="{args.sdk_version}" />\n""")
         f.write(f"""    <package id="Microsoft.Windows.SDK.BuildTools" version="{args.tools_version}" />\n""")
         f.write(f"""    <package id="Microsoft.WindowsAppSDK" version="{args.wasdk_version}" />\n""")
+        f.write(f"""    <package id="Microsoft.Windows.AbiWinRT" version="{args.abiwinrt_version}" />\n""")
+        f.write(f"""   <package id="Microsoft.Web.WebView2" version="{args.webview2_version}" />\n""")
         f.write("""</packages>""")
 
     # Fetch the packages using nuget.exe
@@ -178,7 +196,7 @@ def use_nuget_layout(args):
     # Pack up the paths for the "normal" nuget layout
     return {
         "WindowsLibPath": [
-            os.path.join(args.output_dir, f"Microsoft.Windows.SDK.CPP.{arch}.{args.sdk_version}", "c", arch)
+            os.path.join(args.output_dir, f"Microsoft.Windows.SDK.CPP.{arch}.{args.sdk_version}", "c")
             for arch in args.architecture
         ],
         "WindowsSdkBinPath": os.path.join(args.output_dir, f"Microsoft.Windows.SDK.BuildTools.{args.tools_version}", "bin") + "\\",
