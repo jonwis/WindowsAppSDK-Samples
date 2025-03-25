@@ -5,54 +5,69 @@ import argparse
 import tempfile
 import shutil
 import glob
+import hashlib
 
 def join_path(base_path, *paths):
     """Join a base path with one or more additional paths."""
     return os.path.normpath(os.path.join(base_path, *paths))
 
+
+
+
 NUGET_URL = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 OUTPUT_DIR = join_path(os.path.dirname(__file__), "out/wasdk")
 
-dependencies = {
-    "Microsoft.WindowsAppSDK": "1.7.250127003-experimental3",
-    "Microsoft.Web.WebView2": "1.0.3124.44",
-    "Microsoft.Windows.ABIWinRT": "2.0.210330.2"
-}
+dependencies = [
+    {
+        "name": "Microsoft.WindowsAppSDK",
+        "version": "1.7.250127003-experimental3",
+        "url": "https://www.nuget.org/api/v2/package/Microsoft.WindowsAppSDK/1.7.250127003-experimental3",
+        "SHA256": "15e2d9ee1cb4b9a4a6dc93ff4b155e6d4bfd9e7fdc3b3aa10faa28e3dd4e5866"
+    },
+    {
+        "name": "Microsoft.Web.WebView2",
+        "version": "1.0.3124.44",
+        "url": "https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/1.0.3124.44",
+        "SHA256": "31d61a59a5d5ae2ef5dcb9f175b626c1d64218217f879701ec73ed8fd74b65ae"
+    },
+    {
+        "name": "Microsoft.Windows.ABIWinRT",
+        "version": "2.0.210330.2",
+        "url": "https://www.nuget.org/api/v2/package/Microsoft.Windows.ABIWinRT/2.0.210330.2",
+        "SHA256": "9f94ddbd2fe85ee9e71787c6b67eec03939b2017d6bfab05a064b07b51f99d66"
+    },
+]
 
-def get_nuget_path():
-    # See if there's an environment variable set for nuget.exe
-    nuget_path = os.environ.get("NUGET_PATH")
-    if nuget_path and os.path.exists(nuget_path):
-        return nuget_path
+def fetch_packages(out_dir):
+    package_dir_temp = join_path(out_dir, "packageSource")
+    for dep in dependencies:
+        package_name = dep["name"]
+        package_version = dep["version"]
+        package_url = dep["url"]
+        package_sha256 = dep["SHA256"]
 
-    # See if nuget is on the path somewhere
-    for path in os.environ["PATH"].split(os.pathsep):
-        nuget_path = join_path(path, "nuget.exe")
-        if os.path.exists(nuget_path):
-            return nuget_path
+        # Create the output directory for the package
+        os.makedirs(package_dir_temp, exist_ok=True)
+        package_file = join_path(package_dir_temp, f"{package_name}.{package_version}.nupkg")
+        if os.path.exists(package_file):
+            continue
 
-    # If we get here, nuget.exe is not found. Download it.
-    with tempfile.TemporaryDirectory() as temp_dir:
-        nuget_path = join_path(temp_dir, "nuget.exe")
-        nuget_url = os.environ.get("NUGET_URL") or NUGET_URL
-        urllib.request.urlretrieve(nuget_url, nuget_path)
-        return nuget_path
+        # Fetch, then check the SHA256 of what we got
+        print(f"Fetching {package_name}...")
+        urllib.request.urlretrieve(package_url, package_file)
+        if package_sha256:
+            sha256 = hashlib.sha256()
+            with open(package_file, "rb") as f:
+                sha256.update(f.read())
+            if (sha256.hexdigest() != package_sha256):
+                if package_sha256 == "0":
+                    print(f"SHA256 for {package_file} out of date - should be {sha256.hexdigest()}")
+                else:
+                    raise RuntimeError(f"SHA256 mismatch for {package_file}. Expected {package_sha256}, got {sha256.hexdigest()}")
 
-def deploy_packages(target_dir):
-    os.makedirs(target_dir, exist_ok=True)
-    packages_config = join_path(target_dir, "packages.config")
-    with open(packages_config, "w") as f:
-        f.write(f"""<?xml version="1.0" encoding="utf-8"?>\n<packages>\n""")
-        for package, version in dependencies.items():
-            f.write(f"""    <package id="{package}" version="{version}" />\n""")
-        f.write("""</packages>""")
-    
-    nuget_path = get_nuget_path()
-    command = [nuget_path, "restore", packages_config, "-OutputDirectory", target_dir]
-    print(f"Running command: {' '.join(command)}")
-    result = subprocess.run(command)
-    if result.returncode != 0:
-        raise RuntimeError(f"NuGet restore failed: {result.stderr}")
+        # Extract the package to the output directory
+        package_unpacked = join_path(out_dir, package_name)
+        shutil.unpack_archive(package_file, package_unpacked, "zip")
 
 def generate_abi(target_dir, winmd_refs):
     # Find the abi.exe tool in the target directory
@@ -67,12 +82,12 @@ def generate_abi(target_dir, winmd_refs):
         raise RuntimeError("No WinMD files found for ABI generation.")
 
     # Output the ABI files to a directory named "abi" in the target directory
-    output_dir = join_path(target_dir, "abi")
-    os.makedirs(output_dir, exist_ok=True)
+    abi_dir = join_path(target_dir, "include", "abi")
+    os.makedirs(abi_dir, exist_ok=True)
 
     rsp_file = join_path(target_dir, "abi.rsp")
     with open(rsp_file, "w") as f:
-        f.write(f"-output \"{output_dir}\"\n")
+        f.write(f"-output \"{abi_dir}\"\n")
         f.write(f"-lowercase-include-guard\n")
         f.write(f"-enum-class\n")
         for ref in winmd_refs:
@@ -86,26 +101,27 @@ def generate_abi(target_dir, winmd_refs):
     result = subprocess.run(command, shell=True)
     if result.returncode != 0:
         raise RuntimeError(f"ABI generation failed: {result.stderr}")
+    
+    return abi_dir
 
 def main():
     parser = argparse.ArgumentParser(description="Restore NuGet packages.")
-    parser.add_argument("--nuget-path", help="Path to nuget.exe")
     parser.add_argument("--refresh", action="store_true", help="Refresh the packages")
     parser.add_argument("--winmd-refs", nargs="+", default=["sdk"], help="WinMD references to include in the ABI generation")
     parser.add_argument("--out", default=OUTPUT_DIR, help="Directory to restore packages to")
-    args = parser.parse_intermixed_args()
+    args = parser.parse_args()
 
     if args.refresh and os.path.exists(args.out):
         print(f"Removing existing output directory: {args.out}")
         shutil.rmtree(args.out)
 
-    deploy_packages(args.out)
-    generate_abi(args.out, args.winmd_refs)
+    fetch_packages(args.out)
+    abi_dir = generate_abi(args.out, args.winmd_refs)
 
     print(f"Packages restored to {args.out}.")
     include_paths = [
-        join_path(args.out, "abi"),
-        join_path(args.out, f"Microsoft.WindowsAppSDK.{dependencies['Microsoft.WindowsAppSDK']}", "include")
+        abi_dir,
+        join_path(args.out, "Microsoft.WindowsAppSDK", "include")
     ]
     print(f"Add these to your include path:")
     for path in include_paths:
