@@ -17,9 +17,6 @@ def join_path(base_path, *paths):
 NUGET_URL = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 WINSDK_VERSION = "10.0.26100.3323"
 WINSDK_TOOLS_VERSION = "10.0.26100.1742"
-WASDK_VERSION = "1.7.250310001"
-ABIWINRT_VERSION = "2.0.210330.2"
-WEBVIEW2_VERSION = "1.0.3124.44"
 OUTPUT_DIR = join_path(os.path.dirname(__file__), "out/sdk")
 
 def get_nuget_path():
@@ -64,10 +61,7 @@ def main():
     parser.add_argument("--nuget-path", help="Path to nuget.exe")
     parser.add_argument("--refresh", action="store_true", help="Refresh the packages")
     parser.add_argument("--sdk-version", default=WINSDK_VERSION, help="Version of the Windows SDK to install")
-    parser.add_argument("--wasdk-version", default=WASDK_VERSION, help="Version of the Windows App SDK to install")
     parser.add_argument("--tools-version", default=WINSDK_TOOLS_VERSION, help="Version of the Windows SDK Build tools to install")
-    parser.add_argument("--abiwinrt-version", default=ABIWINRT_VERSION, help="Version of the Windows ABI WinRT to install")
-    parser.add_argument("--webview2-version", default=WEBVIEW2_VERSION, help="Version of the WebView2 SDK to install")
     parser.add_argument("--output-dir", default=OUTPUT_DIR, help="Directory to restore packages to")
     parser.add_argument("--like-sdk", action="store_true", help="Use the layout of the Windows SDK")
     parser.add_argument("architecture", nargs="*", default=default_target_architecture(), help="One or more architectures of the Windows SDK (x86, arm64, or x64)")
@@ -95,9 +89,6 @@ def main():
             f.write(f"""    <package id="Microsoft.Windows.SDK.CPP.{arch}" version="{args.sdk_version}" />\n""")
         f.write(f"""    <package id="Microsoft.Windows.SDK.CPP" version="{args.sdk_version}" />\n""")
         f.write(f"""    <package id="Microsoft.Windows.SDK.BuildTools" version="{args.tools_version}" />\n""")
-        f.write(f"""    <package id="Microsoft.WindowsAppSDK" version="{args.wasdk_version}" />\n""")
-        f.write(f"""    <package id="Microsoft.Windows.AbiWinRT" version="{args.abiwinrt_version}" />\n""")
-        f.write(f"""    <package id="Microsoft.Web.WebView2" version="{args.webview2_version}" />\n""")
         f.write("""</packages>""")
 
     # Fetch the packages using nuget.exe
@@ -113,11 +104,6 @@ def main():
         environment = combine_nugets_like_sdk(args)
     else:
         environment = use_nuget_layout(args)
-
-    # Add both the WASDK include paths and the ABI include paths
-    generate_sdk_abi(args.output_dir)
-    environment["SDKIncludes"] += [join_path(args.output_dir, "abi")]
-    environment["SDKIncludes"] += [join_path(args.output_dir, f"Microsoft.WindowsAppSDK.{args.wasdk_version}", "include")]
 
     # Write the environment variables to a JSON file
     with open(join_path(args.output_dir, "environment.json"), "w") as f:
@@ -227,44 +213,6 @@ def use_nuget_layout(args):
             join_path(args.output_dir, f"Microsoft.Windows.SDK.CPP.{args.sdk_version}", "c", "include", sdk_real_version, "ucrt"),
         ]
     }
-
-def generate_sdk_abi(sdk_path):
-
-    if not os.path.exists(sdk_path):
-        raise RuntimeError(f"SDK path does not exist: {sdk_path}")
-
-    # In the SDK path, find abi.exe and all the WinMD files; just pick the first one
-    abi_exe = glob.glob(root_dir=sdk_path, pathname="**/abi.exe", recursive=True)
-    winmd_files = glob.glob(root_dir=sdk_path, pathname="**/*.winmd", recursive=True)
-
-    # Convert the paths to absolute paths
-    abi_exe = [join_path(sdk_path, path) for path in abi_exe]
-    winmd_files = [join_path(sdk_path, path) for path in winmd_files]
-
-    # The output directory in the SDK path is "abi", make sure it exists
-    output_dir = join_path(sdk_path, "abi")
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Build a .rsp file with the arguments for abi.exe
-    rsp_file = join_path(output_dir, "abi.exe.rsp")
-    with open(rsp_file, "w") as f:
-        f.write(f"-output \"{output_dir}\"\n")
-        f.write(f"-lowercase-include-guard\n")
-        f.write(f"-enum-class\n")
-        for winmd in winmd_files:
-            f.write(f"-input \"{winmd}\"\n")
-
-    # Call abi.exe with the .rsp file
-    if abi_exe:
-        abi_exe = abi_exe[0]
-    else:
-        raise RuntimeError("abi.exe not found")
-
-    command = [abi_exe, f"@{rsp_file}"]
-    print(f"Running command: {' '.join(command)}")
-    result = subprocess.run(command, shell=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"abi.exe failed: {result.stderr}")
 
 if __name__ == "__main__":
     main()

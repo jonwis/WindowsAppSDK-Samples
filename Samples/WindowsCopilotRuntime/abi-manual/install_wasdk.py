@@ -12,8 +12,6 @@ def join_path(base_path, *paths):
     return os.path.normpath(os.path.join(base_path, *paths))
 
 
-
-
 NUGET_URL = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 OUTPUT_DIR = join_path(os.path.dirname(__file__), "out/wasdk")
 
@@ -105,7 +103,7 @@ def generate_abi(target_dir, winmd_refs):
     return abi_dir
 
 def main():
-    parser = argparse.ArgumentParser(description="Restore NuGet packages.")
+    parser = argparse.ArgumentParser(description="Deploys the latest Windows App SDK versions for use in your build environment.")
     parser.add_argument("--refresh", action="store_true", help="Refresh the packages")
     parser.add_argument("--winmd-refs", nargs="+", default=["sdk"], help="WinMD references to include in the ABI generation")
     parser.add_argument("--out", default=OUTPUT_DIR, help="Directory to restore packages to")
